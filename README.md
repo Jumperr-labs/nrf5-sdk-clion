@@ -6,6 +6,7 @@ Running this script from the root directory of your [nRF5-SDK](https://www.nordi
 _Disclaimer: This will not let you build or flash your project from CLion but you will be able to navigate through your project and the SDK libraries._
 
 ## How to use it
+_Tested on Ubuntu 16.04 and macOS_
 1. (optional) Create a backup for your current nrf5-SDK directory
 2. cd into the root of the nrf5-SDK directory
 3. `curl -s https://raw.githubusercontent.com/Jumperr-labs/nrf5-sdk-clion/master/nrf5-sdk-to-clion.sh | bash`
