@@ -10,6 +10,6 @@ _Tested on Ubuntu 16.04 and macOS_
 1. (optional) Create a backup for your current nrf5-SDK directory
 2. cd into the root of the nrf5-SDK directory
 3. `curl -s https://raw.githubusercontent.com/Jumperr-labs/nrf5-sdk-clion/master/nrf5-sdk-to-clion.sh | bash`
-4. Open _"./CMakeLists.txt"_ and uncomment your projects' path (you can uncomment multiple projects)
+4. Open _"./CMakeLists.txt"_ and uncomment the desired project's path (you can uncomment multiple projects)
 
 The last stage is needed since adding all of the example projects to the CMakeLists.txt file would overload CLion.
