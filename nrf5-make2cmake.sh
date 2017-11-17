@@ -16,7 +16,7 @@
 
 set -e
 
-tmp_makefile="CMakeLists-generator.mk"
+tmp_makefile=$(mktemp)
 
 \cat << 'EOF' > ${tmp_makefile}
 LINKERSCRIPT:=`cat Makefile | sed -n 's/.*LINKER_SCRIPT\s\+:=\s\+\(.*\.ld\).*/\1/p'`
@@ -160,11 +160,11 @@ EOF
 
 
 makefile=$1
-    dir=`\dirname ${makefile}`
-    \echo "Creating CMakeLists.txt for ${makefile}"
-    \pushd ${dir} > /dev/null
-    \make -s -f ${tmp_makefile} generate > CMakeLists.txt
-    \popd > /dev/null
+dir=`\dirname ${makefile}`
+\echo "Creating CMakeLists.txt for ${makefile}"
+\pushd ${dir} > /dev/null
+\make -s -f ${tmp_makefile} generate > CMakeLists.txt
+\popd > /dev/null
 \rm ${tmp_makefile}
 
 echo '************************************'
