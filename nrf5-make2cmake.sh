@@ -16,6 +16,17 @@
 
 set -e
 
+nrf52_stlink="nrf52_stlink.cfg"
+
+\cat << 'EOF3' > ${nrf52_stlink}
+
+source [find interface/stlink-v2-1.cfg]
+
+transport select hla_swd
+
+source [find target/nrf52.cfg]
+
+EOF3
 
 nrf52_cmake="nrf52.cmake"
 
@@ -33,6 +44,13 @@ ENDFUNCTION()
 
 FUNCTION(NRF_FLASH_TARGET TARGET)
 
+
+	if (NOT OPENOCD_CFG)
+		set(OPENOCD_CFG ${CMAKE_CURRENT_SOURCE_DIR}/nrf52_stlink.cfg)	
+		message(STATUS "Using default OpenOCD config file: ${OPENOCD_CFG}")
+	else()
+		message(STATUS "Using OpenOCD config file: ${OPENOCD_CFG}")
+	endif()
 
 	if (NOT OPENOCD_BIN)
 		find_program(OPENOCD_BIN openocd)
@@ -175,12 +193,15 @@ FUNCTION(SET_COMPILATION_FLAGS)
 	foreach(LIB ${LIB_FILES})
 	find_file(LIB_FILE_${LIB} ${LIB} ${CMAKE_SOURCE_DIR})
 		if (NOT LIB_FILE_${LIB})
-			list(APPEND LIBS ${LIB})
+			string(REGEX REPLACE "-l(.*)" "\\1" LIB_CLEAN ${LIB})
+			list(APPEND LIBS_CLEAN ${LIB_CLEAN})
 		else ()
 			list(APPEND LIB_FILES_CLEAN ${LIB_FILE_${LIB}})
 		endif()
 	endforeach()
 	string(REPLACE ";" " " LDFLAGS "${LDFLAGS}")
+	set(LIB_FILES_CLEAN ${LIB_FILES_CLEAN} PARENT_SCOPE)
+	set(LIBS_CLEAN ${LIBS_CLEAN} PARENT_SCOPE)
 	set(CMAKE_C_FLAGS "" CACHE INTERNAL "c compiler flags")
 	set(CMAKE_CXX_FLAGS "" CACHE INTERNAL "c++ compiler flags")
 	set(CMAKE_ASM_FLAGS "-x assembler-with-cpp" CACHE INTERNAL "asm compiler flags")
@@ -369,7 +390,8 @@ generate:
 
 	@echo 'include_directories($$$ {INC_FOLDERS})'
 	@echo 'add_executable($$$ {PROJECT_NAME} $$$ {SRC_FILES})'
-	@echo 'target_link_libraries($$$ {PROJECT_NAME} PUBLIC $$$ {LIB_FILES_CLEAN})'
+
+	@echo 'target_link_libraries($$$ {PROJECT_NAME} PUBLIC $$$ {LIBS_CLEAN} $$$ {LIB_FILES_CLEAN})'
 
 	@echo 'message(WARNING "Set SOFTDEVICE variable with the Softdevice hex file")'
 	@echo '#set(SOFTDEVICE $$$ {CMAKE_CURRENT_SOURCE_DIR}/s132.hex)'
